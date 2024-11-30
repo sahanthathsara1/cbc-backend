@@ -12,7 +12,6 @@ console.log("Program ended successfully");
 
 
 
--------------------------------------------------
 function getStudents(password) {
   const p = new Promise((resolve, reject) => {
     if (password == 123) {
