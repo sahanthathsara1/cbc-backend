@@ -1,18 +1,20 @@
 import Product from "../Models/product.js";
 
-export function getProducts(req, res) {
-    Product.find()
-        .then((productlist) => {
-            res.json({
-                list: productlist,
-            });
-        })
-        .catch((error) => {
-            res.status(500).json({
-                error: "An error occurred while fetching the product list.",
-                details: error.message,
-            });
-        });
+export async function getProducts(req, res) {
+    const productlist =await Product.find()
+ try {
+    res.status(200).json({
+        list: productlist,
+    });
+ }catch (error) {
+    res.status(500).json({
+        message: "An error occurred while fetching the product list.",
+        error: error.message,
+    });
+ }
+    
+        
+    
 }
 
 export function createProducts(req, res) {
