@@ -1,9 +1,10 @@
 import express from 'express';
-import { createUser, loginUser } from '../Controllers/userController.js';
-const userRouter =express.Router();
+import { createUser, loginUser, deleteUser } from '../controllers/userController.js';
 
+const userRouter = express.Router();
 
- userRouter.post('/',createUser);
- userRouter.post('/login',loginUser);
+userRouter.post("/", createUser); // Route to create user
+userRouter.post("/login", loginUser); // Route to login user
+userRouter.delete("/", deleteUser); // Route to delete user
 
- export default userRouter;
+export default userRouter;

@@ -5,81 +5,68 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Controller to create a user
 export function createUser(req, res) {
+    const newUserData = req.body;
+    newUserData.password = bcrypt.hashSync(newUserData.password, 10);
 
-    const newUserData =req.body;
-    newUserData.password = bcrypt.hashSync(newUserData.password,10);
-      
-   
-    
     const user = new User(newUserData);
 
-
-    
-    user.save().then(() => {
-        res.json({
-            message : "User created"
+    user.save()
+        .then(() => {
+            res.status(201).json({ message: "User created" });
         })
-
-    }).catch(() => {
-        res.status(500).json({
-              Message: "user not created"      
+        .catch((error) => {
+            res.status(500).json({ message: "User not created", error: error.message });
         });
-    });
-
 }
 
+// Controller to login a user
 export function loginUser(req, res) {
-    User.find({ email: req.body.email })
-        .then((users) => {
-            if (users.length === 0) {
-                return res.status(404).json({
-                    message: "User not found"
-                });
+    const { email, password } = req.body;
+
+    User.findOne({ email })
+        .then((user) => {
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
             }
 
-            const user = users[0];
-            const isPasswordCorrect = bcrypt.compareSync(req.body.password, user.password);
-            
+            const isPasswordCorrect = bcrypt.compareSync(password, user.password);
+
             if (isPasswordCorrect) {
-                
-                const token = jwt.sign({
-                    email: user.email,
-                    firstname: user.firstname,
-                    lastname: user.lastname,
-                    isBlocked: user.isBlocked,
-                    type: user.type,
-                    profilepicture: user.profilepicture
-                }, process.env.SECRET_KEY);
-                
-                res.json({
-                    message: "loggedin",
-                    token: token
-                });
+                const token = jwt.sign(
+                    {
+                        id: user._id,
+                        email: user.email,
+                        firstname: user.firstname,
+                        lastname: user.lastname,
+                    },
+                    process.env.SECRET_KEY,
+                    { expiresIn: "1h" } // Optional: Token expiration
+                );
 
-
-
+                return res.status(200).json({ message: "Logged in", token });
             } else {
-                return res.status(401).json({
-                    message: "Incorrect password"
-                });
+                return res.status(401).json({ message: "Incorrect password" });
             }
         })
-        .catch(error => {
-            return res.status(500).json({
-                message: "Server error",
-                error: error.message
-            });
+        .catch((error) => {
+            res.status(500).json({ message: "Server error", error: error.message });
         });
-} 
-export function deleteUser(req,res){
-    User.deleteOne({email: req.body.email}).then(() => {
-        res.json({
-            message: "User deleted"
+}
+
+// Controller to delete a user
+export function deleteUser(req, res) {
+    const { email } = req.body;
+
+    User.deleteOne({ email })
+        .then((result) => {
+            if (result.deletedCount === 0) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            res.status(200).json({ message: "User deleted" });
         })
-    }).catch(() => {
-        res.status(500).json({
-            message: "User not deleted"
-        })
-    })
+        .catch((error) => {
+            res.status(500).json({ message: "User not deleted", error: error.message });
+        });
 }
