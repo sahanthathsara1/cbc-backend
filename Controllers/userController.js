@@ -8,6 +8,16 @@ dotenv.config();
 // Controller to create a user
 export function createUser(req, res) {
     const newUserData = req.body;
+
+    if(newUserData.type === "admin"){
+        if(req.user==null){
+            return res.status(404).json({ message: "User not found" });
+        }
+        if(req.user.type !== "admin"){
+            return res.status(401).json({ message: "log as admin" });
+        }
+    }
+
     newUserData.password = bcrypt.hashSync(newUserData.password, 10);
 
     const user = new User(newUserData);
@@ -70,3 +80,25 @@ export function deleteUser(req, res) {
             res.status(500).json({ message: "User not deleted", error: error.message });
         });
 }
+
+
+export function isAdmin(req){
+    if (req.user.type === "admin") {
+        return true;
+    }
+    if (req.user.type !== "admin" || req.user==null) {
+    return false;
+    }
+ }
+ export function isCustomer(req){
+    if (req.user.type === "customer") {
+        return true;
+    }
+    if (req.user.type !== "customer" || req.user==null) {
+    return false;
+    }
+}
+
+
+//"email": "admin@example.com" "password": "securepassword123" => admin account,
+//  "email": "cutomer@example.com", "password": "securepassword123", => customer account
