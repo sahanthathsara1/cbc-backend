@@ -24,13 +24,15 @@ app.use(bodyParser.json());
 // Middleware to verify JWT tokens and attach user info to `req`
 app.use((req, res, next) => {
     const token = req.header("Authorization")?.replace("Bearer ", "");
+    console.log(token);
     
     if (token) {
         jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
             if (err) {
                 return res.status(401).json({ message: "Invalid token" });
             }
-            req.user = decoded; // Attach decoded token to request
+            req.user = decoded;
+            console.log(decoded); // Attach decoded token to request
         });
     }
     next();
