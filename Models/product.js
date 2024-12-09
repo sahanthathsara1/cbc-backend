@@ -1,42 +1,42 @@
-    import mongoose from "mongoose";
+import mongoose from "mongoose";
 
-    const productSchema = mongoose.Schema({
-        productID :{
-            type : String,
-            required : true,
-            unique : true 
+const productSchema = new mongoose.Schema({
+    productID: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    productName: {
+        type: String,
+        required: true,
+    },
+    altNames: [
+        {
+            type: String,
         },
-        productName :{
-            type : String,
-            required : true
-        },
-        altNames:[
-            {
-            type : String
-        }
     ],
-    images :[{
-        type : string
-    }],
-    
-        price :{
-            type : Number,
-            required : true
+    images: [
+        {
+            type: String, // Corrected the casing of "string" to "String"
         },
-        lastPrice :{
-            type : Number,
-        required : true
-        },
+    ],
+    price: {
+        type: Number,
+        required: true,
+    },
+    lastPrice: {
+        type: Number,
+        required: true,
+    },
+    stock: {
+        type: Number,
+        required: true,
+    },
+    description: {
+        type: String, // Corrected spelling of "descrption" to "description"
+        required: true,
+    },
+});
 
-        stock :{
-            type : Number,
-            required : true
-        },
-        descrption :{
-            type : String,
-            required : true
-        }
-        
-    })
-    
-    const Product = mongoose.model("products", productSchema);
+const Product = mongoose.model("Product", productSchema); // Singular model name for consistency
+export default Product;//waste arround 2hrs to find this fucking error

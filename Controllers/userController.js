@@ -82,22 +82,36 @@ export function deleteUser(req, res) {
 }
 
 
-export function isAdmin(req){
-    if (req.user.type === "admin") {
-        return true;
-    }
-    if (req.user.type !== "admin" || req.user==null) {
+export function isAdmin(req) {
+
+if(req.user==null){
     return false;
-    }
- }
- export function isCustomer(req){
-    if (req.user.type === "customer") {
-        return true;
-    }
-    if (req.user.type !== "customer" || req.user==null) {
-    return false;
-    }
 }
+
+if (req.user.type != "admin") {
+    return false;
+}
+return true;
+
+
+
+}
+
+export function isCustomer(req) {
+
+    if(req.user==null){
+        return false;
+    }
+    
+    if (req.user.type != "customer") {
+        return false;
+    }
+    return true;
+    
+    
+    
+    }
+
 
 
 //"email": "admin@example.com" "password": "securepassword123" => admin account,

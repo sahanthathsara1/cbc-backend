@@ -3,8 +3,11 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
 import userRouter from './Routes/userRouter.js';
+
+
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import productRouter from './Routes/productRouter.js';
 
 dotenv.config();
 
@@ -40,6 +43,7 @@ app.use((req, res, next) => {
 
 // User routes
 app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
