@@ -5,16 +5,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Controller to create a user
 export function createUser(req, res) {
     const newUserData = req.body;
 
-    if(newUserData.type === "admin"){
-        if(req.user==null){
-            return res.status(404).json({ message: "User not found" });
-        }
-        if(req.user.type !== "admin"){
-            return res.status(401).json({ message: "log as admin" });
+    if (newUserData.type === "admin") {
+        if (!req.user || req.user.type !== "admin") {
+            return res.status(403).json({ message: "Unauthorized: Admin access required" });
         }
     }
 
@@ -24,14 +20,13 @@ export function createUser(req, res) {
 
     user.save()
         .then(() => {
-            res.status(201).json({ message: "User created" });
+            res.status(201).json({ message: "User created successfully" });
         })
         .catch((error) => {
-            res.status(500).json({ message: "User not created", error: error.message });
+            res.status(500).json({ message: "Failed to create user", error: error.message });
         });
 }
 
-// Controller to login a user
 export function loginUser(req, res) {
     const { email, password } = req.body;
 
@@ -45,19 +40,14 @@ export function loginUser(req, res) {
 
             if (isPasswordCorrect) {
                 const token = jwt.sign(
-                    {
-                        id: user._id,
-                        email: user.email,
-                        firstname: user.firstname,
-                        lastname: user.lastname,
-                    },
+                    { id: user._id, email: user.email, type: user.type },
                     process.env.SECRET_KEY,
-                    { expiresIn: "1h" } // Optional: Token expiration
+                    { expiresIn: "1h" }
                 );
 
-                return res.status(200).json({ message: "Logged in", token });
+                res.status(200).json({ message: "Logged in successfully", token });
             } else {
-                return res.status(401).json({ message: "Incorrect password" });
+                res.status(401).json({ message: "Incorrect password" });
             }
         })
         .catch((error) => {
@@ -65,7 +55,6 @@ export function loginUser(req, res) {
         });
 }
 
-// Controller to delete a user
 export function deleteUser(req, res) {
     const { email } = req.body;
 
@@ -74,43 +63,19 @@ export function deleteUser(req, res) {
             if (result.deletedCount === 0) {
                 return res.status(404).json({ message: "User not found" });
             }
-            res.status(200).json({ message: "User deleted" });
+            res.status(200).json({ message: "User deleted successfully" });
         })
         .catch((error) => {
-            res.status(500).json({ message: "User not deleted", error: error.message });
+            res.status(500).json({ message: "Failed to delete user", error: error.message });
         });
 }
 
-
 export function isAdmin(req) {
-
-if(req.user==null){
-    return false;
+    return req.user?.type === "admin";
 }
-
-if (req.user.type != "admin") {
-    return false;
-}
-return true;
-
-
-
-}
-
 export function isCustomer(req) {
-
-    if(req.user==null){
-        return false;
-    }
-    
-    if (req.user.type != "customer") {
-        return false;
-    }
-    return true;
-    
-    
-    
-    }
+    return req.user?.type === "customer";
+}
 
 
 
