@@ -1,4 +1,5 @@
 import Order from "../Models/order.js";
+import Product from "../Models/product.js";
 import { isCustomer } from "./userController.js";
 
 export async function createOrder(req, res) {
@@ -24,12 +25,41 @@ export async function createOrder(req, res) {
             orderID = "CBC" + newNumber;
         }
 
-        // Ensure the request body is valid
-        const newOrderData = req.body;
-        if (!newOrderData || Object.keys(newOrderData).length === 0) {
-            return res.status(400).json({ message: "Order data is required" });
-        }
 
+
+        const newOrderData = req.body;
+
+        const newProductArray = [];
+
+        for (let i = 0; i < newOrderData.orderItems.length; i++) {
+            //console.log(newOrderData.orderItems[i]);
+            const product = await Product.findOne({
+                productID: newOrderData.orderItems[i].productID
+            })
+            console.log(product)
+
+            if(product==null){
+                res.json({message:"Product not found with id "+newOrderData.orderItems[i].productID+""})
+                return;
+            }
+            
+
+            newProductArray.push({
+                productName: product.productName,
+                price: product.price,
+                quantity: newOrderData.orderItems[i].quantity,
+                Image: product.images[0]
+            })
+
+        }
+        console.log(newProductArray)
+
+        newOrderData.orderItems = newProductArray;
+    
+
+        // Ensure the request body is valid
+        
+      
         // Add `orderID` and `email` to the order data
         newOrderData.orderID = orderID;
         newOrderData.email = req.user.email;
@@ -40,7 +70,8 @@ export async function createOrder(req, res) {
         await newOrder.save();
 
         res.status(201).json({ message: "Order placed successfully", orderID });
-    } catch (error) {
+    }
+     catch (error) {
         res.status(500).json({ message: "Failed to place order", error: error.message });
     }
 }

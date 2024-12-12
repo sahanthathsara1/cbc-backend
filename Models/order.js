@@ -17,20 +17,17 @@ const orderSchema = new mongoose.Schema({
                 required: true,
             },
             productName: {
-                type: String,
-                required: true,
+                type: String 
             },
             price: {
-                type: Number,
-                required: true,
+                type: Number
             },
             quantity: {
                 type: Number,
                 required: true,
             },
             Image: {
-                type: String,
-                required: true,
+                type: String
             },
         },
     ],
@@ -49,16 +46,13 @@ const orderSchema = new mongoose.Schema({
         type: String,
     },
     name: {
-        type: String,
-        required: true,
+        type: String
     },
     address: {
-        type: String,
-        required: true,
+        type: String
     },
     phone: {
-        type: String,
-        required: true,
+        type: String
     },
 });
 
