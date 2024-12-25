@@ -3,10 +3,13 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import cors from "cors";
+
 
 import userRouter from "./Routes/userRouter.js";
 import productRouter from "./Routes/productRouter.js";
 import orderRouter from "./Routes/orderRouter.js";
+
 
 dotenv.config();
 
@@ -22,6 +25,7 @@ mongoose
 
 // Middleware
 app.use(bodyParser.json());
+app.use(cors());
 
 // JWT Authentication Middleware
 app.use((req, res, next) => {
